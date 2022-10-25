@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import static java.lang.System
 
 @Service
 public class UserService {
@@ -13,10 +14,8 @@ public class UserService {
     
     String password = "123456789";
     
-    File tempDir;
-    tempDir = File.createTempFile("", ".");
-    tempDir.delete();
-    tempDir.mkdir();  // Noncompliant
+    String className = System.getProperty("messageClassName");
+    Class clazz = Class.forName(className);  // Noncompliant
 
     public List<User> getUser(String containName) {
 
