@@ -15,9 +15,9 @@ steps:
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'Sonarcloud'
-    organization: 'devops-test-v1'
-    projectKey: 'DevOps-test-v1_pet-clinic'
-    projectName: 'pet-clinic'
+    organization: 'LaboratorioFinal'
+    projectKey: 'murdoko_spring-boot-kubernetes'
+    projectName: 'spring-boot-kubernetes'
 
 - task: Gradle@3
   inputs:
@@ -34,14 +34,14 @@ steps:
 
 - task: dependency-check-build-task@6
   inputs:
-    projectName: 'pet-clinic'
+    projectName: 'spring-boot-kubernetes'
     scanPath: '$(Build.SourcesDirectory)/build/libs'
     format: 'HTML'
 
 - task: sonarcloud-buildbreaker@2
   inputs:
     SonarCloud: 'SonarCloud'
-    organization: 'devops-test-v1'
+    organization: 'LaboratorioFinal'
 
 - task: DockerInstaller@0
   inputs:
@@ -49,14 +49,14 @@ steps:
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'DockerConnService'
+    containerRegistry: 'DockerConn'
     command: 'login'
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'DockerConnService'
+    containerRegistry: 'DockerConn'
     command: 'build'
-    repository: 'murdoko/pet-clinic'
+    repository: 'murdoko/spring-boot-kubernetes'
     Dockerfile: '**/Dockerfile'
     tags: 'latest'
 
@@ -64,12 +64,12 @@ steps:
       sudo apt-get install -y rpm
       wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
       sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-      trivy image murdoko/pet-clinic:latest
+      trivy image murdoko/spring-boot-kubernetes:latest
   displayName: Image Scan
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'DockerConnService'
-    repository: 'murdoko/pet-clinic'
+    containerRegistry: 'DockerConn'
+    repository: 'murdoko/spring-boot-kubernetes'
     command: 'push'
     tags: 'latest'
