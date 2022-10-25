@@ -19,7 +19,7 @@ stages:
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
 
-    - script: ls -la
+    - script: find $(Build.SourcesDirectory) -name "*.jar"
     
     - task: dependency-check-build-task@6
       inputs:
