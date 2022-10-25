@@ -14,8 +14,7 @@ public class UserService {
     
     String password = "123456789";
     
-    String inputString = "s3cr37";
-    byte[] key         = inputString.getBytes();
+    byte[] key = "Any String you want".getBytes();
     SHA256.getHMAC(key, "message");
 
     public List<User> getUser(String containName) {
