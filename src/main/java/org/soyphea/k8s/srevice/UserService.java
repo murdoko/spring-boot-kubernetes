@@ -19,12 +19,13 @@ public class UserService {
     String password = "123456789";
     
     try
-      {
-        Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
-    } catch(NoSuchAlgorithmException|NoSuchPaddingException e) 
-    { }
+    {
+        Cipher c1 = Cipher.getInstance("DES"); // Noncompliant: DES works with 56-bit keys allow attacks via exhaustive search
+    }
+    catch(NoSuchAlgorithmException|NoSuchPaddingException e)
+    {
+    }
     
-
     public List<User> getUser(String containName) {
 
         return users.stream().filter(user -> user.getName().contains(containName)).collect(Collectors.toList());
