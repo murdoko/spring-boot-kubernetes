@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.crypto.Cipher;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
 
 
 @Service
@@ -15,7 +18,12 @@ public class UserService {
     
     String password = "123456789";
     
-    Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
+    try
+      {
+        Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
+    } catch(NoSuchAlgorithmException|NoSuchPaddingException e) 
+    { }
+    
 
     public List<User> getUser(String containName) {
 
