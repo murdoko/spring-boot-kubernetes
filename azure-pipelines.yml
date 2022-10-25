@@ -2,6 +2,19 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+
+- stage: SCA
+  jobs:
+  - job: Job
+    displayName: 'SCA'
+    steps:
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        scanPath: '$(Build.SourcesDirectory)/build/libs'
+        format: 'HTML'
+
+
 - stage: SAST
   jobs:
   - job: Job
@@ -46,14 +59,3 @@ stages:
         SonarCloud: 'SonarCloud'
         organization: 'murdoko'
 
-- stage: SCA
-  jobs:
-  - job: Job
-    displayName: 'SCA'
-    steps:
-    - script: echo 'Hola Mundo'
-    - task: dependency-check-build-task@6
-      inputs:
-        projectName: 'spring-boot-kubernetes'
-        scanPath: '$(Build.SourcesDirectory)/build/libs'
-        format: 'HTML'
