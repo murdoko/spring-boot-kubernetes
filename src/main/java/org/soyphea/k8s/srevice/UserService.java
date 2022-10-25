@@ -18,12 +18,14 @@ public class UserService {
     
     String password = "123456789";
     
-    try
-    {
-        Cipher c1 = Cipher.getInstance("DES"); // Noncompliant: DES works with 56-bit keys allow attacks via exhaustive search
-    }
-    catch(NoSuchAlgorithmException|NoSuchPaddingException e)
-    {
+    public static void main(String[] args) {
+        try
+        {
+            Cipher c1 = Cipher.getInstance("DES"); // Noncompliant: DES works with 56-bit keys allow attacks via exhaustive search
+        }
+        catch(NoSuchAlgorithmException|NoSuchPaddingException e)
+        {
+        }
     }
     
     public List<User> getUser(String containName) {
