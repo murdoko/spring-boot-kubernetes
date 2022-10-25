@@ -16,7 +16,7 @@ public class UserService {
     
     String inputString = "s3cr37";
     byte[] key         = inputString.getBytes();
-    SHA256.getHMAC(key, message);  // Noncompliant
+    SHA256.getHMAC(key, "message");
 
     public List<User> getUser(String containName) {
 
