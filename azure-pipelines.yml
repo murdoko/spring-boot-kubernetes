@@ -49,6 +49,6 @@ stages:
 - stage: DAST
   jobs:
   - job: Job
-    displayName: 'SAST'
+    displayName: 'DAST'
     steps:
     - script: echo 'Hola Mundo'
