@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import java.servlet.http.Cookie;
+import java.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
