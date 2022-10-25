@@ -17,11 +17,11 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
-    - script: find $(Build.SourcesDirectory) -name '*.jar'
+    - script: find $(Build.SourcesDirectory) -name "*.jar"
     - task: dependency-check-build-task@6
       inputs:
         projectName: 'spring-boot-kubernetes'
-        scanPath: '$(Build.SourcesDirectory)'
+        scanPath: '$(Build.SourcesDirectory)/target'
         format: 'HTML'
 
 
