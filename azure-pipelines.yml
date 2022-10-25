@@ -25,3 +25,9 @@ stages:
         projectKey: 'murdoko_spring-boot-kubernetes'
         projectName: 'spring-boot-kubernetes'
 
+- stage: DAST
+  jobs:
+  - job: Job
+    displayName: 'SAST'
+    steps:
+    - script: echo 'Hola Mundo'
