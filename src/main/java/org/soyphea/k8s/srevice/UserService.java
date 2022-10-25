@@ -16,7 +16,7 @@ public class UserService {
 
     List<User> users = Arrays.asList(new User(1, "Dara"), new User(2, "Seyha"));
     
-    /*
+
     String password = "123456789";
     
     public static void main(String[] args) {
@@ -28,7 +28,7 @@ public class UserService {
         {
         }
     }
-    */
+
     
     public List<User> getUser(String containName) {
 
