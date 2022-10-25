@@ -14,7 +14,7 @@ public class UserService {
     
     String password = "123456789";
     
-    Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
+    String c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
 
     public List<User> getUser(String containName) {
 
