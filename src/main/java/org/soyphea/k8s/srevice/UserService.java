@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import java.servlet.http.Cookie;
-import java.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 public class UserService {
@@ -16,6 +13,8 @@ public class UserService {
     List<User> users = Arrays.asList(new User(1, "Dara"), new User(2, "Seyha"));
     
     String password = "123456789";
+    
+    Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", "");
 
     public List<User> getUser(String containName) {
 
@@ -25,9 +24,4 @@ public class UserService {
 }
 
 
-@RequestMapping(value = "/")
-public void index(HttpServletResponse res, String value) {
-    res.setHeader("Set-Cookie", value);  // Noncompliant
-    Cookie cookie = new Cookie("jsessionid", value);  // Noncompliant
-    res.addCookie(cookie);
-}
+
