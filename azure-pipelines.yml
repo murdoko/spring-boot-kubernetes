@@ -2,33 +2,10 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-- stage: SCA
-  jobs:
-  - job: Job
-    displayName: 'SCA'
-    steps:
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
-    - script: find $(Build.SourcesDirectory) -name "*.jar"
-    - task: dependency-check-build-task@6
-      inputs:
-        projectName: 'spring-boot-kubernetes'
-        scanPath: '$(Build.SourcesDirectory)/target'
-        format: 'HTML'
-
-
 - stage: SAST
   jobs:
   - job: Job
-    displayName: 'SAST'
+    displayName: 'SAST SonarCloud'
     steps:
     - task: Maven@4
       inputs:
@@ -69,3 +46,24 @@ stages:
         SonarCloud: 'SonarCloud'
         organization: 'murdoko'
 
+- stage: SCA
+  jobs:
+  - job: Job
+    displayName: 'SCA Dependency check'
+    steps:
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    - script: find $(Build.SourcesDirectory) -name "*.jar"
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        scanPath: '$(Build.SourcesDirectory)/target'
+        format: 'HTML'
