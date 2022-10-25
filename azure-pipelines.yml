@@ -1,0 +1,75 @@
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Gradle@3
+  inputs:
+    gradleWrapperFile: 'gradlew'
+    tasks: 'build'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: false
+    spotBugsAnalysis: false
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'Sonarcloud'
+    organization: 'devops-test-v1'
+    projectKey: 'DevOps-test-v1_pet-clinic'
+    projectName: 'pet-clinic'
+
+- task: Gradle@3
+  inputs:
+    gradleWrapperFile: 'gradlew'
+    tasks: 'sonarqube'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: true
+    sqGradlePluginVersionChoice: 'specify'
+    sonarQubeGradlePluginVersion: '3.3'
+    spotBugsAnalysis: false
+
+
+- task: dependency-check-build-task@6
+  inputs:
+    projectName: 'pet-clinic'
+    scanPath: '$(Build.SourcesDirectory)/build/libs'
+    format: 'HTML'
+
+- task: sonarcloud-buildbreaker@2
+  inputs:
+    SonarCloud: 'SonarCloud'
+    organization: 'devops-test-v1'
+
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnService'
+    command: 'login'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnService'
+    command: 'build'
+    repository: 'murdoko/pet-clinic'
+    Dockerfile: '**/Dockerfile'
+    tags: 'latest'
+
+- script: |
+      sudo apt-get install -y rpm
+      wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
+      sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
+      trivy image murdoko/pet-clinic:latest
+  displayName: Image Scan
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnService'
+    repository: 'murdoko/pet-clinic'
+    command: 'push'
+    tags: 'latest'
