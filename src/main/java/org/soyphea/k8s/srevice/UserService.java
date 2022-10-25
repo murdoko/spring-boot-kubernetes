@@ -10,7 +10,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     List<User> users = Arrays.asList(new User(1, "Dara"), new User(2, "Seyha"));
+    
     String password = "123456789";
+    
+    File tempDir;
+    tempDir = File.createTempFile("", ".");
+    tempDir.delete();
+    tempDir.mkdir();  // Noncompliant
 
     public List<User> getUser(String containName) {
 
