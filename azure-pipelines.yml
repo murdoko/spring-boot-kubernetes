@@ -46,9 +46,14 @@ stages:
         SonarCloud: 'SonarCloud'
         organization: 'murdoko'
 
-- stage: DAST
+- stage: SCA
   jobs:
   - job: Job
-    displayName: 'DAST'
+    displayName: 'SCA'
     steps:
     - script: echo 'Hola Mundo'
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        scanPath: '$(Build.SourcesDirectory)/build/libs'
+        format: 'HTML'
