@@ -14,7 +14,7 @@ public class UserService {
     
     String password = "123456789";
     
-    Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "login", "");
+    Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
 
     public List<User> getUser(String containName) {
 
