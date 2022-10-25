@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import static java.lang.System;
+import org.h2.security.SHA256;
 
 @Service
 public class UserService {
@@ -14,8 +14,9 @@ public class UserService {
     
     String password = "123456789";
     
-    String className = System.getProperty("messageClassName");
-    Class clazz = Class.forName(className);  // Noncompliant
+    String inputString = "s3cr37";
+    byte[] key         = inputString.getBytes();
+    SHA256.getHMAC(key, message);  // Noncompliant
 
     public List<User> getUser(String containName) {
 
