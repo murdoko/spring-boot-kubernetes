@@ -22,7 +22,6 @@ stages:
       inputs:
         projectName: 'spring-boot-kubernetes'
         scanPath: '$(Build.SourcesDirectory)/target'
-        format: 'HTML'
+        format: 'JSON'
         reportsDirectory: 'reporte'
-        reportFilename: 'reporte.txt'
-    - script: find $(Build.SourcesDirectory) -name "reporte.txt"
+    - script: find $(Build.SourcesDirectory) -name "dependency-check-report.*"
