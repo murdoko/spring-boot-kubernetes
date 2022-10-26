@@ -2,50 +2,6 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-- stage: SAST
-  jobs:
-  - job: Job
-    displayName: 'SAST SonarCloud'
-    steps:
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
-
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'SonarCloud'
-        organization: 'murdoko'
-        projectKey: 'murdoko_spring-boot-kubernetes'
-        projectName: 'spring-boot-kubernetes'
-    
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: true
-        sqMavenPluginVersionChoice: 'latest'
-        
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'
-
-    - task: sonarcloud-buildbreaker@2
-      inputs:
-        SonarCloud: 'SonarCloud'
-        organization: 'murdoko'
-
 - stage: SCA
   jobs:
   - job: Job
@@ -67,51 +23,6 @@ stages:
         projectName: 'spring-boot-kubernetes'
         scanPath: '$(Build.SourcesDirectory)/target'
         format: 'HTML'
-
-- stage: DAST
-  jobs:
-  - job: Job
-    displayName: 'DAST Container Security'
-    steps:
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
-
-    - task: DockerInstaller@0
-      inputs:
-        dockerVersion: '17.09.0-ce'
-
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConn'
-        command: 'login'
-
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConn'
-        command: 'build'
-        repository: 'murdoko/spring-boot-kubernetes'
-        Dockerfile: '**/Dockerfile'
-        tags: 'latest'
-
-    - script: |
-          sudo apt-get install -y rpm
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-          trivy image murdoko/spring-boot-kubernetes:latest
-      displayName: Image Scan
-
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConn'
-        repository: 'murdoko/spring-boot-kubernetes'
-        command: 'push'
-        tags: 'latest'
-
+        reportsDirectory: 'reporte'
+        reportFilename: 'reporte.txt'
+    - script: find $(Build.SourcesDirectory) -name "reporte.txt"
