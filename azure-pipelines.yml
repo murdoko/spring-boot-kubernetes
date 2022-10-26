@@ -2,6 +2,85 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+- stage: SAST
+  jobs:
+  - job: Job
+    displayName: 'SAST SonarCloud'
+    steps:
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'SonarCloud'
+        organization: 'murdoko'
+        projectKey: 'murdoko_spring-boot-kubernetes'
+        projectName: 'spring-boot-kubernetes'
+    
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: true
+        sqMavenPluginVersionChoice: 'latest'
+        
+    - task: SonarCloudPublish@1
+      inputs:
+        pollingTimeoutSec: '300'
+
+    - task: sonarcloud-buildbreaker@2
+      inputs:
+        SonarCloud: 'SonarCloud'
+        organization: 'murdoko'
+
+- stage: SCA
+  jobs:
+  - job: Job
+    displayName: 'SCA Dependency check'
+    steps:
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    - script: |
+        echo "Se realiza una búsqueda para identificar donde queda el .jar"
+        find $(Build.SourcesDirectory) -name "*.jar"
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        scanPath: '$(Build.SourcesDirectory)/target'
+        format: 'JSON'
+        reportsDirectory: 'reporte'
+    - script: |
+        echo "Se analiza el reporte generado en formato JSON en busca de vulnerabilidades de tipo HIGH o HIGHEST"
+        echo "Ubicación del reporte: $(Build.SourcesDirectory)/reporte/dependency-check-report.json"
+        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 1 ]
+        then
+          echo "Atención! Hay vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
+          #exit 1
+        else
+          echo "OK! No se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
+        fi
+
 - stage: DAST
   jobs:
   - job: Job
@@ -39,9 +118,7 @@ stages:
           sudo apt-get install -y rpm
           wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
           sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-          #trivy image murdoko/spring-boot-kubernetes:latest
           trivy image --exit-code 1 --severity HIGH,CRITICAL murdoko/spring-boot-kubernetes:latest
-
       displayName: Image Scan
 
     - task: Docker@2
@@ -50,3 +127,4 @@ stages:
         repository: 'murdoko/spring-boot-kubernetes'
         command: 'push'
         tags: 'latest'
+
