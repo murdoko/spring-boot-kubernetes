@@ -24,4 +24,11 @@ stages:
         scanPath: '$(Build.SourcesDirectory)/target'
         format: 'JSON'
         reportsDirectory: 'reporte'
-    - script: find $(Build.SourcesDirectory) -name "dependency-check-report.*"
+    - script: |
+        find $(Build.SourcesDirectory) -name "dependency-check-report.*"
+        if [ $(grep -Po '"confidence":.*?[^\\]",' dependency-check-report.json | grep '"HIGH"' | wc -l) -gt 1 ]
+        then
+          echo "Hay errores de tipo HIGH"
+        else
+          echo "No hay errores"
+        fi
