@@ -25,10 +25,12 @@ stages:
         format: 'JSON'
         reportsDirectory: 'reporte'
     - script: |
-        find $(Build.SourcesDirectory) -name "dependency-check-report.*"
-        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"' | wc -l) -gt 1 ]
+        echo "Se analiza el reporte en busca de vulnerabilidades de tipo HIGH o HIGHEST"
+        echo "Ubicación del reporte: $(Build.SourcesDirectory)/reporte/dependency-check-report.json"
+        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 1 ]
         then
-          echo "Hay errores de tipo HIGH"
+          echo "Atención! Hay vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
+          exit 0
         else
-          echo "No hay errores"
+          echo "OK! No se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
         fi
