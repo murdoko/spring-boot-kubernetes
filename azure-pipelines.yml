@@ -26,7 +26,7 @@ stages:
         reportsDirectory: 'reporte'
     - script: |
         find $(Build.SourcesDirectory) -name "dependency-check-report.*"
-        if [ $(grep -Po '"confidence":.*?[^\\]",' dependency-check-report.json | grep '"HIGH"' | wc -l) -gt 1 ]
+        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"' | wc -l) -gt 1 ]
         then
           echo "Hay errores de tipo HIGH"
         else
