@@ -2,10 +2,10 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-- stage: SCA
+- stage: DAST
   jobs:
   - job: Job
-    displayName: 'SCA Dependency check'
+    displayName: 'DAST Container Security'
     steps:
     - task: Maven@4
       inputs:
@@ -17,20 +17,36 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
-    - script: find $(Build.SourcesDirectory) -name "*.jar"
-    - task: dependency-check-build-task@6
+
+    - task: DockerInstaller@0
       inputs:
-        projectName: 'spring-boot-kubernetes'
-        scanPath: '$(Build.SourcesDirectory)/target'
-        format: 'JSON'
-        reportsDirectory: 'reporte'
+        dockerVersion: '17.09.0-ce'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerConn'
+        command: 'login'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerConn'
+        command: 'build'
+        repository: 'murdoko/spring-boot-kubernetes'
+        Dockerfile: '**/Dockerfile'
+        tags: 'latest'
+
     - script: |
-        echo "Se analiza el reporte en busca de vulnerabilidades de tipo HIGH o HIGHEST"
-        echo "Ubicación del reporte: $(Build.SourcesDirectory)/reporte/dependency-check-report.json"
-        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 1 ]
-        then
-          echo "Atención! Hay vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
-          exit 1
-        else
-          echo "OK! No se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
-        fi
+          sudo apt-get install -y rpm
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
+          #trivy image murdoko/spring-boot-kubernetes:latest
+          trivy image --exit-code 1 --severity HIGH,CRITICAL murdoko/spring-boot-kubernetes:latest
+
+      displayName: Image Scan
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerConn'
+        repository: 'murdoko/spring-boot-kubernetes'
+        command: 'push'
+        tags: 'latest'
