@@ -17,6 +17,7 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
+      displayName: Maven - Genera Build
 
     - task: SonarCloudPrepare@1
       inputs:
@@ -24,6 +25,7 @@ stages:
         organization: 'murdoko'
         projectKey: 'murdoko_spring-boot-kubernetes'
         projectName: 'spring-boot-kubernetes'
+      displayName: SonarCloud Prepare
     
     - task: Maven@4
       inputs:
@@ -36,6 +38,7 @@ stages:
         effectivePomSkip: false
         sonarQubeRunAnalysis: true
         sqMavenPluginVersionChoice: 'latest'
+      displayName: Maven - Análisis SonarCloud
         
     - task: SonarCloudPublish@1
       inputs:
@@ -61,6 +64,7 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
+      displayName: Maven - Genera Build
     - script: |
         echo "Se realiza una búsqueda para identificar donde queda el .jar"
         find $(Build.SourcesDirectory) -name "*.jar"
@@ -73,7 +77,7 @@ stages:
     - script: |
         echo "Se analiza el reporte generado en formato JSON en busca de vulnerabilidades de tipo HIGH o HIGHEST"
         echo "Ubicación del reporte: $(Build.SourcesDirectory)/reporte/dependency-check-report.json"
-        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 1 ]
+        if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 0 ]
         then
           echo "Atención! Hay vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
           #exit 1
@@ -96,6 +100,7 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
+      displayName: Maven - Genera Build
 
     - task: DockerInstaller@0
       inputs:
@@ -105,6 +110,7 @@ stages:
       inputs:
         containerRegistry: 'DockerConn'
         command: 'login'
+      displayName: Docker Login
 
     - task: Docker@2
       inputs:
@@ -113,6 +119,7 @@ stages:
         repository: 'murdoko/spring-boot-kubernetes'
         Dockerfile: '**/Dockerfile'
         tags: 'latest'
+      displayName: Build Image
 
     - script: |
           sudo apt-get install -y rpm
@@ -127,4 +134,5 @@ stages:
         repository: 'murdoko/spring-boot-kubernetes'
         command: 'push'
         tags: 'latest'
+      displayName: Push Image
 
