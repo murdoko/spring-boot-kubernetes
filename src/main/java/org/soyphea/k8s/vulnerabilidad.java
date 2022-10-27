@@ -1,6 +1,4 @@
 import javax.crypto.Cipher;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.NoSuchPaddingException;
 
 public class vulnerabilidad {
     
