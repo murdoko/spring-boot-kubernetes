@@ -82,7 +82,7 @@ stages:
           echo "Ubicación del reporte: $(Build.SourcesDirectory)/reporte/dependency-check-report.json"
           if [ $(grep -Po '"confidence":.*?[^\\]",' $(Build.SourcesDirectory)/reporte/dependency-check-report.json | grep '"HIGH"\|"HIGHEST"' | wc -l) -gt 0 ]
           then
-            echo "Atención! Hay vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
+            echo "Atención! Se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
             #exit 1
           else
             echo "OK! No se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
