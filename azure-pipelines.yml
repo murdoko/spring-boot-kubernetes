@@ -25,7 +25,7 @@ stages:
         organization: 'murdoko'
         projectKey: 'murdoko_spring-boot-kubernetes'
         projectName: 'spring-boot-kubernetes'
-      displayName: SonarCloud Prepare
+      displayName: SonarCloud - Prepare
     
     - task: Maven@4
       inputs:
@@ -43,11 +43,13 @@ stages:
     - task: SonarCloudPublish@1
       inputs:
         pollingTimeoutSec: '300'
+      displayName: SonarCloud - Publish
 
     - task: sonarcloud-buildbreaker@2
       inputs:
         SonarCloud: 'SonarCloud'
         organization: 'murdoko'
+      displayName: SonarCloud - BuilBreaker
 
 - stage: SCA
   jobs:
@@ -68,6 +70,7 @@ stages:
     - script: |
         echo "Se realiza una búsqueda para identificar donde queda el .jar"
         find $(Build.SourcesDirectory) -name "*.jar"
+      displayName: Script - Busca archivo .jar
     - task: dependency-check-build-task@6
       inputs:
         projectName: 'spring-boot-kubernetes'
@@ -84,6 +87,7 @@ stages:
         else
           echo "OK! No se encontraron vulnerabilidades de tipo ALTA (HIGH o HIGHEST)"
         fi
+      displayName: Script - Revisa vulnerabilidades en reporte
 
 - stage: DAST
   jobs:
@@ -126,7 +130,7 @@ stages:
           wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
           sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
           trivy image --exit-code 1 --severity HIGH,CRITICAL murdoko/spring-boot-kubernetes:latest
-      displayName: Image Scan
+      displayName: Trivi Image Scan
 
     - task: Docker@2
       inputs:
@@ -134,5 +138,5 @@ stages:
         repository: 'murdoko/spring-boot-kubernetes'
         command: 'push'
         tags: 'latest'
-      displayName: Push Image
+      displayName: Docker Push
 
