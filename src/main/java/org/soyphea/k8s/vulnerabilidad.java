@@ -2,6 +2,8 @@ import javax.crypto.Cipher;
 
 public class vulnerabilidad {
     
+    String pass = "qwerty"
+    
     /*
     public static void inyecta_vulnerabilidad() {
         try
