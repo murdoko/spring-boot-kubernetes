@@ -14,22 +14,7 @@ import javax.crypto.NoSuchPaddingException;
 @Service
 public class UserService {
 
-    List<User> users = Arrays.asList(new User(1, "Dara"), new User(2, "Seyha"));
-    
-
-    /*
-    String password = "123456789";
-    
-    public static void main(String[] args) {
-        try
-        {
-            Cipher c1 = Cipher.getInstance("DES"); // Noncompliant: DES works with 56-bit keys allow attacks via exhaustive search
-        }
-        catch(NoSuchAlgorithmException|NoSuchPaddingException e)
-        {
-        }
-    }
-    */
+    List<User> users = Arrays.asList(new User(1, "Dara"), new User(2, "Seyha"));  
     
     public List<User> getUser(String containName) {
 
@@ -37,6 +22,3 @@ public class UserService {
     }
 
 }
-
-
-
